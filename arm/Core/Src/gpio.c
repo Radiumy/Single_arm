@@ -52,40 +52,46 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Motor_r_DIR_Pin|Motor_r2_ENA_Pin|Motor_r2_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, Motor_r_PWM_Pin|Motor_r_DIR_Pin|Motor_r2_ENA_Pin|Motor_r2_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, Motor_r_ENA_Pin|Motor_l_ENA_Pin|Motor_r1_ENA_Pin|Motor_r1_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, Motor_r_ENA_Pin|Motor_l_ENA_Pin|Motor_r1_PWM_Pin|Motor_r1_ENA_Pin
+                          |Motor_r1_DIR_Pin|Motor_r2_PWM_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Motor_l_DIR_GPIO_Port, Motor_l_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Motor_l_DIR_Pin|Motor_l_PWM_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, Motor_l1_DIR_Pin|Motor_l1_ENA_Pin|Motor_l2_ENA_Pin|Motor_l2_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, Motor_l1_DIR_Pin|Motor_l1_ENA_Pin|Motor_l1_PWM_Pin|Motor_l2_PWM_Pin
+                          |Motor_l2_ENA_Pin|Motor_l2_DIR_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : Motor_r_DIR_Pin Motor_r2_ENA_Pin Motor_r2_DIR_Pin */
-  GPIO_InitStruct.Pin = Motor_r_DIR_Pin|Motor_r2_ENA_Pin|Motor_r2_DIR_Pin;
+  /*Configure GPIO pins : Motor_r_PWM_Pin Motor_r_DIR_Pin Motor_r2_ENA_Pin Motor_r2_DIR_Pin */
+  GPIO_InitStruct.Pin = Motor_r_PWM_Pin|Motor_r_DIR_Pin|Motor_r2_ENA_Pin|Motor_r2_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Motor_r_ENA_Pin Motor_l_ENA_Pin Motor_r1_ENA_Pin Motor_r1_DIR_Pin */
-  GPIO_InitStruct.Pin = Motor_r_ENA_Pin|Motor_l_ENA_Pin|Motor_r1_ENA_Pin|Motor_r1_DIR_Pin;
+  /*Configure GPIO pins : Motor_r_ENA_Pin Motor_l_ENA_Pin Motor_r1_PWM_Pin Motor_r1_ENA_Pin
+                           Motor_r1_DIR_Pin Motor_r2_PWM_Pin */
+  GPIO_InitStruct.Pin = Motor_r_ENA_Pin|Motor_l_ENA_Pin|Motor_r1_PWM_Pin|Motor_r1_ENA_Pin
+                          |Motor_r1_DIR_Pin|Motor_r2_PWM_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Motor_l_DIR_Pin */
-  GPIO_InitStruct.Pin = Motor_l_DIR_Pin;
+  /*Configure GPIO pins : Motor_l_DIR_Pin Motor_l_PWM_Pin */
+  GPIO_InitStruct.Pin = Motor_l_DIR_Pin|Motor_l_PWM_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Motor_l_DIR_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Motor_l1_DIR_Pin Motor_l1_ENA_Pin Motor_l2_ENA_Pin Motor_l2_DIR_Pin */
-  GPIO_InitStruct.Pin = Motor_l1_DIR_Pin|Motor_l1_ENA_Pin|Motor_l2_ENA_Pin|Motor_l2_DIR_Pin;
+  /*Configure GPIO pins : Motor_l1_DIR_Pin Motor_l1_ENA_Pin Motor_l1_PWM_Pin Motor_l2_PWM_Pin
+                           Motor_l2_ENA_Pin Motor_l2_DIR_Pin */
+  GPIO_InitStruct.Pin = Motor_l1_DIR_Pin|Motor_l1_ENA_Pin|Motor_l1_PWM_Pin|Motor_l2_PWM_Pin
+                          |Motor_l2_ENA_Pin|Motor_l2_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

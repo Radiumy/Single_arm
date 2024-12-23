@@ -39,14 +39,19 @@ extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN Private defines */
 #define REC_LENGTH  1
 #define MAX_REC_LENGTH  1024 
-extern unsigned char UART1_Rx_Buf[MAX_REC_LENGTH] ; 	//USART1�洢��������
-extern unsigned char UART1_Rx_flg ;                   //USART1������ɱ�־
-extern unsigned int  UART1_Rx_cnt ;                   //USART1�������ݼ���
-extern unsigned char UART1_temp[REC_LENGTH] ;       	//USART1�������ݻ���
-extern unsigned char UART2_Rx_Buf[MAX_REC_LENGTH] ; 	//USART1�洢��������
-extern unsigned char UART2_Rx_flg ;                   //USART1������ɱ�־
-extern unsigned int  UART2_Rx_cnt ;                   //USART1�������ݼ���
-extern unsigned char UART2_temp[REC_LENGTH] ;       	//USART1�������ݻ���
+extern unsigned char UART1_Rx_Buf[MAX_REC_LENGTH] ; 	//USART1
+extern unsigned char UART1_Rx_flg ;                   //USART1
+extern unsigned int  UART1_Rx_cnt ;                   //USART1
+extern unsigned char UART1_temp[REC_LENGTH] ;       	//USART1
+extern unsigned char UART2_Rx_Buf[MAX_REC_LENGTH] ; 	//USART1
+extern unsigned char UART2_Rx_flg ;                   //USART1
+extern unsigned int  UART2_Rx_cnt ;                   //USART1
+extern unsigned char UART2_temp[REC_LENGTH] ;       	//USART1
+
+
+
+
+
 void GetOneByte(uint8_t data);
 static void Data_Anl(uint8_t *data, uint8_t len);
 void send_right(float right_speed);

@@ -26,7 +26,8 @@
 "arm\stm32f4xx_hal_uart.o"
 "arm\system_stm32f4xx.o"
 "arm\control.o"
---strict --scatter "arm\arm.sct"
+"arm\canfunc.o"
+--library_type=microlib --strict --scatter "arm\arm.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "arm.map" -o arm\arm.axf

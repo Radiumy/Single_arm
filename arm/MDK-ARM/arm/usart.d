@@ -37,3 +37,4 @@ arm\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 arm\usart.o: ../HARDWARE/control.h
 arm\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 arm\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+arm\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

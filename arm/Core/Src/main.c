@@ -26,6 +26,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "string.h"
+#include "canFunc.h"
+#include "control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +61,8 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
+
 /* USER CODE END 0 */
 
 /**
@@ -89,16 +94,30 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM4_Init();
   MX_TIM8_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_CAN1_Init();
   MX_TIM1_Init();
-  MX_TIM3_Init();
+  MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
-	HAL_CAN_Start(&hcan1);
+//		CAN1_Mode_Init(1,7,6,6,0);  
+
+
+HAL_StatusTypeDef temp1 = HAL_CAN_Start(&hcan1);
+	HAL_StatusTypeDef temp2 = HAL_CAN_Start(&hcan2);
+	
+	int16_t speed_l = 10000;
+	int16_t speed_r = 10000;
+	
+//	Motor_test();
+	
+	//YT: set motor to be in velocity mode
+	Motor_Set_To_Vel_Mode();
+
 	HAL_TIM_Base_Start_IT(&htim1);
+	HAL_TIM_Base_Start_IT(&htim8);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,6 +127,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+			//Motor_test();
+		 HAL_Delay(2);
+
+				Motor_Drive(latest_command.vel_l, latest_command.vel_r);
   }
   /* USER CODE END 3 */
 }

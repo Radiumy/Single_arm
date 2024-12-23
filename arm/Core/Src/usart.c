@@ -26,6 +26,7 @@
 #include "main.h"
 #include "stdint.h"
 #include "stdlib.h"
+#include "string.h"
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -222,52 +223,47 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   if(huart->Instance==USART1)
   {
    GetOneByte(UART1_temp[0]);
-   HAL_UART_Receive_IT(&huart1,&UART1_temp[0],REC_LENGTH);
-	 
-  }
-	if(huart->Instance==USART2)
-  {
-		
-		HAL_UART_Receive_IT(&huart2,&UART2_temp[0],REC_LENGTH);
+	//HAL_UART_Transmit(&huart2, (uint8_t*)"5", strlen("5"), 0xffff);
+	 HAL_UART_Receive_IT(&huart1,&UART1_temp[0],REC_LENGTH);
   }
 }
 /*
-Ö¡Í· ¹¦ÄÜÂë  theta_l1  theta_l2 theta_r1 theta_r2 theta_l theta_r vel_l vel_r
+head func theta_l1  theta_l2 theta_r1 theta_r2 theta_l theta_r vel_l vel_r
 0xAA 0x0A    4           4         4        4         4        4   4      4    0xBB
 Reset 
 0xAA  0x0B  0xBB
 */
-
+uint8_t buffer_index = 0;
+uint8_t frame_type = 0; 
+static uint8_t datatemp[50];
 void GetOneByte(uint8_t data)
 {
-	uint8_t buffer_index = 0;
-
-	uint8_t frame_type; //1-contorl_frame , 2-reset_frame
-
-	static uint8_t datatemp[50];
-
+	//1-control_frame , 2-reset_frame
   static uint8_t rxstate = 0;
 
 	if (rxstate == 0 && data == 0xAA)
 	{
+		
 		rxstate = 1;
 		buffer_index = 0;
 		datatemp[buffer_index++] = data;
 	}
 	else if (rxstate == 1)
 	{
+
 		rxstate = 2;
 		datatemp[buffer_index++] = data;
-		if (data == 0x0A) frame_type = 1;
-		else if (data == 0x0B) frame_type = 2;
+		if (data == 0x01) frame_type = 1;
+		else if (data == 0x00) frame_type = 2;
 		else if (data == 0xAA) rxstate = 1;
 		else
 		{
 				rxstate = 0;			
 		}
 	}
-	else if (rxstate == 2 && buffer_index < 35)
+	else if (rxstate == 2 && buffer_index < 38)
 	{
+
 		datatemp[buffer_index++] = data;
 		if (frame_type == 2 && data == 0xBB) 
 		{
@@ -275,71 +271,88 @@ void GetOneByte(uint8_t data)
 			reset_all();
 			rxstate = 0;
 		}
-		if (frame_type == 1 && buffer_index == 35 && data == 0xBB)
+		if (frame_type == 1 && buffer_index == 38 && data == 0xBB)
 		{
 			// control frame
-			Data_Anl(datatemp, 35); 
+			Data_Anl(datatemp, 38); 
 			rxstate = 0;
+			frame_type = 0;
 		}
 	}
 	else
 	{
 		rxstate = 0;
+		frame_type = 0;
 	}
 }
-
-// Data_AnlÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//data_anl æ•°æ®è§£æž
 static void Data_Anl(uint8_t *data, uint8_t len)
 {
 	//================================================================================
 
-	latest_command.theta_l1[0] = data[2];
-	latest_command.theta_l1[1] = data[3];
-	latest_command.theta_l1[2] = data[4];
-	latest_command.theta_l1[3] = data[5];
+	HAL_UART_Transmit(&huart2, (uint8_t*)("1111") , strlen("1111"), 100);
+	latest_command.theta_l1 = data[2]<<24|data[3]<<16|data[4]<<8|data[5];
+	latest_command.theta_l2 = data[6]<<24|data[7]<<16|data[8]<<8|data[9];
+	
+	latest_command.theta_r1 = data[10]<<24|data[11]<<16|data[12]<<8|data[13];
+	latest_command.theta_r2 = data[14]<<24|data[15]<<16|data[16]<<8|data[17];
+	
+	latest_command.mm_l = data[18]<<24|data[19]<<16|data[20]<<8|data[21];
+	latest_command.mm_r = data[22]<<24|data[23]<<16|data[24]<<8|data[25];
+	
+	latest_command.vel_l = data[26]<<24|data[27]<<16|data[28]<<8|data[29];
+	latest_command.vel_r = data[30]<<24|data[31]<<16|data[32]<<8|data[33];
+	
+	latest_command.cam_l = (data[35] == 0x01);
+	latest_command.cam_m = (data[36] == 0x01);
+	latest_command.cam_l = (data[37] == 0x01);
+	
+//	      uint8_t cur_frame[35]={0};
+//        uint8_t data_frame_head[2] = {0xAA, 0x0A}; 
 
-	latest_command.theta_l2[0] = data[6];
-	latest_command.theta_l2[1] = data[7];
-	latest_command.theta_l2[2] = data[8];
-	latest_command.theta_l2[3] = data[9];
+//        uint8_t frame_foot[1] = {0xBB}; 
+//        memcpy(cur_frame, data_frame_head, 2);
 
-	latest_command.theta_r1[0] = data[10];
-	latest_command.theta_r1[1] = data[11];
-	latest_command.theta_r1[2] = data[12];
-	latest_command.theta_r1[3] = data[13];
+//        cur_frame[2] = (uint8_t)(latest_command.theta_l1 >> 24);
+//        cur_frame[3] = (uint8_t)(latest_command.theta_l1 >> 16);
+//        cur_frame[4] = (uint8_t)(latest_command.theta_l1 >> 8);
+//        cur_frame[5] = (uint8_t)(latest_command.theta_l1);
+//        cur_frame[6] = (uint8_t)(latest_command.theta_l2 >> 24);
+//        cur_frame[7] = (uint8_t)(latest_command.theta_l2 >> 16);
+//        cur_frame[8] = (uint8_t)(latest_command.theta_l2 >> 8);
+//        cur_frame[9] = (uint8_t)(latest_command.theta_l2);
+//        
+//        cur_frame[10] = (uint8_t)(latest_command.theta_r1 >> 24);
+//        cur_frame[11] = (uint8_t)(latest_command.theta_r1 >> 16);
+//        cur_frame[12] = (uint8_t)(latest_command.theta_r1 >> 8);
+//        cur_frame[13] = (uint8_t)(latest_command.theta_r1);
+//        cur_frame[14] = (uint8_t)(latest_command.theta_r2 >> 24);
+//        cur_frame[15] = (uint8_t)(latest_command.theta_r2 >> 16);
+//        cur_frame[16] = (uint8_t)(latest_command.theta_r2 >> 8);
+//        cur_frame[17] = (uint8_t)(latest_command.theta_r2);
+//        
+//        cur_frame[18] = (uint8_t)(latest_command.mm_l >> 24);
+//        cur_frame[19] = (uint8_t)(latest_command.mm_l >> 16);
+//        cur_frame[20] = (uint8_t)(latest_command.mm_l >> 8);
+//        cur_frame[21] = (uint8_t)(latest_command.mm_l);
+//        cur_frame[22] = (uint8_t)(latest_command.mm_r >> 24);
+//        cur_frame[23] = (uint8_t)(latest_command.mm_r >> 16);
+//        cur_frame[24] = (uint8_t)(latest_command.mm_r >> 8);
+//        cur_frame[25] = (uint8_t)(latest_command.mm_r);
 
-	latest_command.theta_r2[0] = data[14];
-	latest_command.theta_r2[1] = data[15];
-	latest_command.theta_r2[2] = data[16];
-	latest_command.theta_r2[3] = data[17];
-
-	latest_command.mm_l[0] = data[18];
-	latest_command.mm_l[1] = data[19];
-	latest_command.mm_l[2] = data[20];
-	latest_command.mm_l[3] = data[21];
-
-	latest_command.mm_r[0] = data[22];
-	latest_command.mm_r[1] = data[23];
-	latest_command.mm_r[2] = data[24];
-	latest_command.mm_r[3] = data[25];
-
-	latest_command.vel_l[0] = data[26];
-	latest_command.vel_l[1] = data[27];
-	latest_command.vel_l[2] = data[28];
-	latest_command.vel_l[3] = data[29];
-
-	latest_command.vel_r[0] = data[30];
-	latest_command.vel_r[1] = data[31];
-	latest_command.vel_r[2] = data[32];
-	latest_command.vel_r[3] = data[33];
-
-//int32_t tar_x,tar_y;
-
-	//	tar_x = data[2]<<24|data[3]<<16|data[4]<<8|data[5];
-		//tar_y = data[6]<<24|data[7]<<16|data[8]<<8|data[9];
-		//printf("tar_x:%d,tar_y:%d\r\n",tar_x,tar_y);
-
-// TODO: move to timer
-//move(tar_x,tar_y);
+//        cur_frame[26] = (uint8_t)(latest_command.vel_l >> 24);
+//        cur_frame[27] = (uint8_t)(latest_command.vel_l >> 16);
+//        cur_frame[28] = (uint8_t)(latest_command.vel_l >> 8);
+//        cur_frame[29] = (uint8_t)(latest_command.vel_l);
+//        cur_frame[30] = (uint8_t)(latest_command.vel_r >> 24);
+//        cur_frame[31] = (uint8_t)(latest_command.vel_r >> 16);
+//        cur_frame[32] = (uint8_t)(latest_command.vel_r >> 8);
+//        cur_frame[33] = (uint8_t)(latest_command.vel_r);
+//        
+//        memcpy(cur_frame+34, frame_foot, 1);
+//        HAL_UART_Transmit(&huart2, cur_frame , 35, 100);
+//printf("latest_command:");
+//printf("%d, %d, %d, %d, %d, %d, %d, %d", latest_command.theta_l1, latest_command.theta_l2, latest_command.theta_r1, 
+//				latest_command.theta_r2, latest_command.mm_l, latest_command.mm_r, latest_command.vel_l, latest_command.vel_r);
 }
 /* USER CODE END 1 */

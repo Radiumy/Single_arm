@@ -37,3 +37,7 @@ arm\main.o: ../Core/Inc/tim.h
 arm\main.o: ../Core/Inc/usart.h
 arm\main.o: ../Core/Inc/gpio.h
 arm\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+arm\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+arm\main.o: ../HARDWARE/canFunc.h
+arm\main.o: ../HARDWARE/control.h
+arm\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
